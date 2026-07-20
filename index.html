@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tuinoverzicht</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
+<header>
+  <div>
+    <div class="title">Tuinoverzicht</div>
+    <div class="subtitle" id="subtitle"></div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab-btn" data-view="kaart">Kaart</button>
+    <button class="tab-btn" data-view="kalender">Snoeikalender</button>
+    <button class="tab-btn" data-view="lijst">Alle planten</button>
+    <button class="edit-btn" id="edit-toggle"></button>
+    <button class="tab-btn" id="export-btn" style="display:none;">⬇ Exporteren</button>
+    <button class="tab-btn" id="reset-btn" style="display:none;">↺ Herstel gepubliceerd</button>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<div id="panel-root"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
