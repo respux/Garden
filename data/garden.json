@@ -1,0 +1,56 @@
+{
+  "zones": [
+    {
+      "id": "z1",
+      "naam": "Ingangstuin (border)",
+      "kleur": "#5B7553",
+      "points": [
+        {"x": 17.5, "y": 14.5}, {"x": 28.5, "y": 12}, {"x": 34, "y": 16},
+        {"x": 35.5, "y": 22}, {"x": 31, "y": 27.5}, {"x": 22, "y": 29},
+        {"x": 15.5, "y": 24.5}, {"x": 14, "y": 18.5}
+      ]
+    },
+    {
+      "id": "z2",
+      "naam": "Gazon",
+      "kleur": "#71835B",
+      "points": [
+        {"x": 29, "y": 34}, {"x": 55, "y": 33.5}, {"x": 82, "y": 34},
+        {"x": 84.5, "y": 55}, {"x": 82, "y": 75}, {"x": 76, "y": 96},
+        {"x": 45, "y": 97}, {"x": 24, "y": 96}, {"x": 21, "y": 78},
+        {"x": 24, "y": 55}, {"x": 26, "y": 42}
+      ]
+    },
+    {
+      "id": "z3",
+      "naam": "Nieuw plantvak (in aanleg)",
+      "kleur": "#A8763E",
+      "points": [
+        {"x": 20.5, "y": 83}, {"x": 33, "y": 82.5}, {"x": 33.5, "y": 91},
+        {"x": 27, "y": 95}, {"x": 20, "y": 91}
+      ]
+    }
+  ],
+  "plants": [
+    {
+      "id": "p1",
+      "naam": "Boom bij trampoline (soort onbekend)",
+      "latijnseNaam": "",
+      "type": "boom",
+      "zoneId": "z2",
+      "plantDatum": null,
+      "notities": "Voorlopig geraden op basis van de luchtfoto — pas naam/soort aan zodra je 't weet.",
+      "snoeiMaanden": [],
+      "snoeiMethode": [],
+      "oogstMaanden": [],
+      "x": 38,
+      "y": 57
+    }
+  ],
+  "achtergrond": {
+    "bestand": "img/plattegrond.jpg",
+    "x": 50,
+    "y": 50,
+    "zoom": 100
+  }
+}
