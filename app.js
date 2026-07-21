@@ -517,4 +517,318 @@ function renderZonePanel(zone) {
 
 function renderPlantDetail(plant) {
   const div = document.createElement("div");
-  const zone = state.zones.find((z) => z.id === plant.zo
+  const zone = state.zones.find((z) => z.id === plant.zoneId);
+  const header = document.createElement("div");
+  header.className = "detail-header";
+  header.innerHTML = `<div class="detail-name-row"><span style="font-size:20px;">${TYPE_INFO[plant.type]?.symbol || "🌱"}</span><div class="detail-name">${escapeHtml(plant.naam)}</div></div>`;
+  if (state.editMode) {
+    const actions = document.createElement("div");
+    const editB = document.createElement("button"); editB.className = "icon-btn"; editB.textContent = "✎";
+    editB.onclick = () => { state.panel = { type: "plantForm", data: plant }; render(); };
+    const delB = document.createElement("button"); delB.className = "icon-btn"; delB.textContent = "🗑";
+    delB.onclick = () => {
+      if (!confirm("Deze plant verwijderen?")) return;
+      state.plants = state.plants.filter((p) => p.id !== plant.id);
+      persist(); state.panel = null; render();
+    };
+    actions.appendChild(editB); actions.appendChild(delB);
+    header.appendChild(actions);
+  }
+  div.appendChild(header);
+  if (plant.latijnseNaam) {
+    const latin = document.createElement("div");
+    latin.className = "detail-latin"; latin.textContent = plant.latijnseNaam;
+    div.appendChild(latin);
+  }
+  const meta = document.createElement("div");
+  meta.className = "detail-meta";
+  meta.textContent = `${TYPE_INFO[plant.type]?.label || ""} · ${zone ? zone.naam : "Geen zone"}`;
+  div.appendChild(meta);
+
+  const fields = document.createElement("div");
+  fields.className = "detail-fields";
+  if (plant.plantDatum) fields.appendChild(fieldEl("Geplant op", new Date(plant.plantDatum).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })));
+  if (plant.snoeiMaanden?.length) fields.appendChild(fieldEl("Snoeimaanden", plant.snoeiMaanden.map((m) => MAAND_NAMEN[m - 1]).join(", ")));
+  if (plant.snoeiMethode?.length) fields.appendChild(fieldEl("Manier van snoeien", plant.snoeiMethode.join(", ")));
+  if (plant.oogstMaanden?.length) fields.appendChild(fieldEl("Oogstmaanden", plant.oogstMaanden.map((m) => MAAND_NAMEN[m - 1]).join(", ")));
+  if (plant.notities) fields.appendChild(fieldEl("Notities", plant.notities, true));
+  div.appendChild(fields);
+  return div;
+}
+
+function fieldEl(label, value, multiline) {
+  const d = document.createElement("div");
+  d.innerHTML = `<div class="field-label"></div><div class="field-value"></div>`;
+  d.querySelector(".field-label").textContent = label;
+  d.querySelector(".field-value").textContent = value;
+  return d;
+}
+
+// ---- plant form with species suggestions ------------------------------
+
+function findSuggestions(query) {
+  if (!query || query.trim().length < 2) return [];
+  const q = query.trim().toLowerCase();
+  const fromDb = state.soorten.filter((s) => s.naam.toLowerCase().includes(q) || (s.latijnseNaam || "").toLowerCase().includes(q));
+  const fromGarden = state.plants.filter((p) => p.naam.toLowerCase().includes(q) && (p.snoeiMaanden?.length || p.snoeiMethode?.length))
+    .map((p) => ({ naam: p.naam, latijnseNaam: p.latijnseNaam, type: p.type, snoeiMaanden: p.snoeiMaanden, snoeiMethode: p.snoeiMethode, oogstMaanden: p.oogstMaanden, tips: "Al eerder toegevoegd in jouw tuin.", _eigen: true }));
+  const combined = [...fromDb, ...fromGarden];
+  const seen = new Set();
+  return combined.filter((s) => { const key = s.naam.toLowerCase(); if (seen.has(key)) return false; seen.add(key); return true; }).slice(0, 5);
+}
+
+function renderPlantForm(initial) {
+  const isEdit = !!initial.id;
+  const data = {
+    id: initial.id, naam: initial.naam || "", latijnseNaam: initial.latijnseNaam || "", type: initial.type || "struik",
+    zoneId: initial.zoneId || "", plantDatum: initial.plantDatum || "", notities: initial.notities || "",
+    snoeiMaanden: initial.snoeiMaanden || [], snoeiMethode: initial.snoeiMethode || [], oogstMaanden: initial.oogstMaanden || [],
+    x: initial.x, y: initial.y,
+  };
+
+  const div = document.createElement("form");
+  div.style.display = "flex"; div.style.flexDirection = "column"; div.style.gap = "0";
+
+  const title = document.createElement("div");
+  title.className = "detail-name"; title.style.marginBottom = "14px";
+  title.textContent = isEdit ? "Plant bewerken" : "Nieuwe plant";
+  div.appendChild(title);
+
+  const naamField = labeledInput("Naam *", data.naam, (v) => { data.naam = v; renderSuggestions(); });
+  div.appendChild(naamField.wrap);
+
+  const suggestBox = document.createElement("div");
+  suggestBox.id = "suggest-box";
+  div.appendChild(suggestBox);
+
+  function renderSuggestions() {
+    const matches = findSuggestions(data.naam);
+    suggestBox.innerHTML = "";
+    if (matches.length === 0) return;
+    const box = document.createElement("div");
+    box.className = "suggestion-box";
+    box.innerHTML = `<div class="field-label">Suggesties</div>`;
+    matches.forEach((m) => {
+      const line = document.createElement("div");
+      line.style.marginBottom = "4px";
+      line.innerHTML = `<b>${escapeHtml(m.naam)}</b>${m.latijnseNaam ? " <i>(" + escapeHtml(m.latijnseNaam) + ")</i>" : ""} — ${escapeHtml(m.tips || "")}`;
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "tag"; btn.textContent = "Overnemen";
+      btn.onclick = () => {
+        data.latijnseNaam = m.latijnseNaam || data.latijnseNaam;
+        data.type = m.type || data.type;
+        data.snoeiMaanden = m.snoeiMaanden || data.snoeiMaanden;
+        data.snoeiMethode = m.snoeiMethode || data.snoeiMethode;
+        data.oogstMaanden = m.oogstMaanden || data.oogstMaanden;
+        if (m.tips && !m._eigen) data.notities = data.notities ? data.notities + "\n" + m.tips : m.tips;
+        rebuildDynamicFields();
+        latinField.input.value = data.latijnseNaam;
+        notesArea.value = data.notities;
+        suggestBox.innerHTML = "";
+      };
+      line.appendChild(document.createElement("br"));
+      line.appendChild(btn);
+      box.appendChild(line);
+    });
+    suggestBox.appendChild(box);
+  }
+
+  const latinField = labeledInput("Latijnse naam", data.latijnseNaam, (v) => { data.latijnseNaam = v; }, true);
+  div.appendChild(latinField.wrap);
+
+  const typeWrap = document.createElement("div"); typeWrap.className = "field";
+  typeWrap.innerHTML = `<div class="field-label">Type</div>`;
+  const typeRow = document.createElement("div"); typeRow.className = "tag-row";
+  Object.entries(TYPE_INFO).forEach(([key, info]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "tag" + (data.type === key ? " on" : "");
+    b.textContent = info.label;
+    b.onclick = () => { data.type = key; renderTypeButtons(); rebuildDynamicFields(); };
+    typeRow.appendChild(b);
+  });
+  function renderTypeButtons() {
+    [...typeRow.children].forEach((b, i) => { b.classList.toggle("on", Object.keys(TYPE_INFO)[i] === data.type); });
+  }
+  typeWrap.appendChild(typeRow);
+  div.appendChild(typeWrap);
+
+  const zoneWrap = document.createElement("div"); zoneWrap.className = "field";
+  zoneWrap.innerHTML = `<div class="field-label">Zone</div>`;
+  const zoneSelect = document.createElement("select"); zoneSelect.className = "input";
+  zoneSelect.innerHTML = `<option value="">Geen zone</option>` + state.zones.map((z) => `<option value="${z.id}">${escapeHtml(z.naam)}</option>`).join("");
+  zoneSelect.value = data.zoneId || "";
+  zoneSelect.onchange = () => { data.zoneId = zoneSelect.value; };
+  zoneWrap.appendChild(zoneSelect);
+  div.appendChild(zoneWrap);
+
+  const dateField = labeledInput("Plantdatum", data.plantDatum, (v) => { data.plantDatum = v; }, false, "date");
+  div.appendChild(dateField.wrap);
+
+  const snoeiWrap = document.createElement("div"); snoeiWrap.className = "field";
+  snoeiWrap.innerHTML = `<div class="field-label">Snoeimaanden</div>`;
+  const snoeiRow = monthToggleRow(data.snoeiMaanden, (arr) => { data.snoeiMaanden = arr; });
+  snoeiWrap.appendChild(snoeiRow);
+  div.appendChild(snoeiWrap);
+
+  const methodeWrap = document.createElement("div"); methodeWrap.className = "field";
+  methodeWrap.innerHTML = `<div class="field-label">Manier van snoeien</div>`;
+  const methodeRow = document.createElement("div"); methodeRow.className = "tag-row";
+  SNOEI_METHODEN.forEach((m) => {
+    const b = document.createElement("button"); b.type = "button";
+    b.className = "tag" + (data.snoeiMethode.includes(m) ? " on" : "");
+    b.textContent = m;
+    b.onclick = () => {
+      data.snoeiMethode = data.snoeiMethode.includes(m) ? data.snoeiMethode.filter((x) => x !== m) : [...data.snoeiMethode, m];
+      b.classList.toggle("on");
+    };
+    methodeRow.appendChild(b);
+  });
+  methodeWrap.appendChild(methodeRow);
+  div.appendChild(methodeWrap);
+
+  const oogstWrap = document.createElement("div"); oogstWrap.className = "field";
+  function buildOogst() {
+    oogstWrap.innerHTML = "";
+    if (data.type !== "moestuin") return;
+    oogstWrap.innerHTML = `<div class="field-label">Oogstmaanden</div>`;
+    oogstWrap.appendChild(monthToggleRow(data.oogstMaanden, (arr) => { data.oogstMaanden = arr; }));
+  }
+  div.appendChild(oogstWrap);
+
+  const notesWrap = document.createElement("div"); notesWrap.className = "field";
+  notesWrap.innerHTML = `<div class="field-label">Notities</div>`;
+  const notesArea = document.createElement("textarea"); notesArea.className = "input"; notesArea.rows = 3;
+  notesArea.value = data.notities; notesArea.placeholder = "optioneel";
+  notesArea.oninput = () => { data.notities = notesArea.value; };
+  notesWrap.appendChild(notesArea);
+  div.appendChild(notesWrap);
+
+  function rebuildDynamicFields() {
+    renderTypeButtons();
+    buildOogst();
+  }
+  buildOogst();
+
+  const treeHint = document.createElement("div");
+  if (data.type === "boom") {
+    treeHint.className = "tip"; treeHint.style.marginBottom = "12px";
+    treeHint.textContent = "Na het opslaan vraag ik je deze boom op de kaart te plaatsen.";
+  }
+  div.appendChild(treeHint);
+
+  const actions = document.createElement("div"); actions.className = "form-actions";
+  const saveBtn = document.createElement("button"); saveBtn.type = "submit"; saveBtn.className = "add-btn solid"; saveBtn.style.width = "auto";
+  saveBtn.textContent = "Opslaan";
+  const cancelBtn = document.createElement("button"); cancelBtn.type = "button"; cancelBtn.className = "add-btn"; cancelBtn.style.width = "auto";
+  cancelBtn.textContent = "Annuleren";
+  cancelBtn.onclick = () => { state.panel = null; render(); };
+  actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+  div.appendChild(actions);
+
+  div.onsubmit = (e) => {
+    e.preventDefault();
+    data.naam = naamField.input.value.trim();
+    data.latijnseNaam = latinField.input.value.trim();
+    data.plantDatum = dateField.input.value;
+    data.notities = notesArea.value.trim();
+    if (!data.naam) return;
+    if (isEdit) {
+      const idx = state.plants.findIndex((p) => p.id === data.id);
+      state.plants[idx] = { ...state.plants[idx], ...data, zoneId: data.zoneId || null };
+    } else {
+      data.id = uid();
+      state.plants.push({ ...data, zoneId: data.zoneId || null });
+    }
+    persist();
+    const needsPlacement = data.type === "boom" && typeof data.x !== "number";
+    if (needsPlacement) {
+      state.placingTreeId = data.id;
+      state.view = "kaart";
+      state.panel = null;
+    } else {
+      state.panel = { type: "plant", data: state.plants.find((p) => p.id === data.id) };
+    }
+    render();
+  };
+
+  return div;
+}
+
+function monthToggleRow(selectedArr, onChange) {
+  const row = document.createElement("div"); row.className = "tag-row";
+  MAAND_NAMEN.forEach((m, idx) => {
+    const val = idx + 1;
+    const b = document.createElement("button"); b.type = "button"; b.className = "month-tag" + (selectedArr.includes(val) ? " on" : "");
+    b.textContent = m;
+    b.onclick = () => {
+      const i = selectedArr.indexOf(val);
+      if (i >= 0) selectedArr.splice(i, 1); else selectedArr.push(val);
+      onChange(selectedArr);
+      b.classList.toggle("on");
+    };
+    row.appendChild(b);
+  });
+  return row;
+}
+
+function labeledInput(label, value, onInput, italic, type) {
+  const wrap = document.createElement("div"); wrap.className = "field";
+  const lab = document.createElement("div"); lab.className = "field-label"; lab.textContent = label;
+  const input = document.createElement("input"); input.className = "input"; input.type = type || "text"; input.value = value || "";
+  if (italic) input.style.fontStyle = "italic";
+  input.oninput = () => onInput(input.value);
+  wrap.appendChild(lab); wrap.appendChild(input);
+  return { wrap, input };
+}
+
+// ---- zone form (naming a freshly-sketched polygon) ------------------------
+
+function renderZoneForm(zone) {
+  const div = document.createElement("div");
+  const title = document.createElement("div"); title.className = "detail-name"; title.style.marginBottom = "14px";
+  title.textContent = "Nieuwe zone";
+  div.appendChild(title);
+
+  const naamField = labeledInput("Naam *", zone.naam, (v) => { zone.naam = v; });
+  div.appendChild(naamField.wrap);
+
+  const colorWrap = document.createElement("div"); colorWrap.className = "field";
+  colorWrap.innerHTML = `<div class="field-label">Kleur</div>`;
+  const colorRow = document.createElement("div"); colorRow.className = "tag-row";
+  ZONE_PALET.forEach((c) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "swatch" + (zone.kleur === c ? " on" : "");
+    b.style.background = c;
+    b.onclick = () => { zone.kleur = c; [...colorRow.children].forEach((x) => x.classList.remove("on")); b.classList.add("on"); };
+    colorRow.appendChild(b);
+  });
+  colorWrap.appendChild(colorRow);
+  div.appendChild(colorWrap);
+
+  const actions = document.createElement("div"); actions.className = "form-actions";
+  const saveBtn = document.createElement("button"); saveBtn.className = "add-btn solid"; saveBtn.style.width = "auto";
+  saveBtn.textContent = "Zone opslaan";
+  saveBtn.onclick = () => {
+    zone.naam = naamField.input.value.trim();
+    if (!zone.naam) return;
+    state.zones.push({ id: uid(), naam: zone.naam, points: zone.points, kleur: zone.kleur });
+    persist();
+    state.panel = null;
+    render();
+  };
+  const cancelBtn = document.createElement("button"); cancelBtn.className = "add-btn"; cancelBtn.style.width = "auto";
+  cancelBtn.textContent = "Annuleren (vorm weggooien)";
+  cancelBtn.onclick = () => { state.panel = null; render(); };
+  actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+  div.appendChild(actions);
+  return div;
+}
+
+// ---- utils -------------------------------------------------------------
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+window.tuinExport = exportData;
+window.tuinReset = resetToPublished;
+
+init();
