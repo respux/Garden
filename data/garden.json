@@ -1,50 +1,249 @@
 {
   "zones": [
     {
-      "id": "z1",
-      "naam": "Ingangstuin (border)",
-      "kleur": "#5B7553",
+      "id": "6mo9t2yn",
+      "naam": "Border voorraan",
       "points": [
-        {"x": 17.5, "y": 14.5}, {"x": 28.5, "y": 12}, {"x": 34, "y": 16},
-        {"x": 35.5, "y": 22}, {"x": 31, "y": 27.5}, {"x": 22, "y": 29},
-        {"x": 15.5, "y": 24.5}, {"x": 14, "y": 18.5}
-      ]
+        {
+          "x": 34.5,
+          "y": 17.7
+        },
+        {
+          "x": 29.9,
+          "y": 23.3
+        },
+        {
+          "x": 25.8,
+          "y": 23.9
+        },
+        {
+          "x": 21.6,
+          "y": 19.2
+        },
+        {
+          "x": 18.7,
+          "y": 19.2
+        },
+        {
+          "x": 16.4,
+          "y": 21.9
+        },
+        {
+          "x": 16.6,
+          "y": 25.3
+        },
+        {
+          "x": 17.7,
+          "y": 27.6
+        },
+        {
+          "x": 14.1,
+          "y": 27.9
+        },
+        {
+          "x": 14.4,
+          "y": 24.7
+        },
+        {
+          "x": 12.7,
+          "y": 24.3
+        },
+        {
+          "x": 12.2,
+          "y": 30.2
+        },
+        {
+          "x": 9.7,
+          "y": 30.3
+        },
+        {
+          "x": 10.1,
+          "y": 18.9
+        },
+        {
+          "x": 35.4,
+          "y": 17
+        }
+      ],
+      "kleur": "#6E8894"
     },
     {
-      "id": "z2",
-      "naam": "Gazon",
-      "kleur": "#71835B",
+      "id": "8jl6atn0",
+      "naam": "Border veld",
       "points": [
-        {"x": 29, "y": 34}, {"x": 55, "y": 33.5}, {"x": 82, "y": 34},
-        {"x": 84.5, "y": 55}, {"x": 82, "y": 75}, {"x": 76, "y": 96},
-        {"x": 45, "y": 97}, {"x": 24, "y": 96}, {"x": 21, "y": 78},
-        {"x": 24, "y": 55}, {"x": 26, "y": 42}
-      ]
+        {
+          "x": 14.9,
+          "y": 88.6
+        },
+        {
+          "x": 17.3,
+          "y": 83.5
+        },
+        {
+          "x": 15.2,
+          "y": 81.5
+        },
+        {
+          "x": 11.7,
+          "y": 82.4
+        },
+        {
+          "x": 8.2,
+          "y": 80.8
+        },
+        {
+          "x": 6.3,
+          "y": 77
+        },
+        {
+          "x": 6.4,
+          "y": 72.2
+        },
+        {
+          "x": 7.4,
+          "y": 69.7
+        },
+        {
+          "x": 6.4,
+          "y": 67
+        },
+        {
+          "x": 6.7,
+          "y": 64.7
+        },
+        {
+          "x": 8.6,
+          "y": 63.2
+        },
+        {
+          "x": 8,
+          "y": 57.9
+        },
+        {
+          "x": 9.3,
+          "y": 53.9
+        },
+        {
+          "x": 7.7,
+          "y": 52.6
+        },
+        {
+          "x": 7.6,
+          "y": 49.9
+        },
+        {
+          "x": 10.2,
+          "y": 42.8
+        },
+        {
+          "x": 11.9,
+          "y": 30.6
+        },
+        {
+          "x": 9.2,
+          "y": 30.8
+        },
+        {
+          "x": 4.5,
+          "y": 89
+        },
+        {
+          "x": 14.3,
+          "y": 90.1
+        }
+      ],
+      "kleur": "#B08D57"
     },
     {
-      "id": "z3",
-      "naam": "Nieuw plantvak (in aanleg)",
-      "kleur": "#A8763E",
+      "id": "w9u5wr0d",
+      "naam": "Border terras",
       "points": [
-        {"x": 20.5, "y": 83}, {"x": 33, "y": 82.5}, {"x": 33.5, "y": 91},
-        {"x": 27, "y": 95}, {"x": 20, "y": 91}
-      ]
+        {
+          "x": 31.1,
+          "y": 39.8
+        },
+        {
+          "x": 37.9,
+          "y": 39.5
+        },
+        {
+          "x": 38.2,
+          "y": 40.8
+        },
+        {
+          "x": 35.9,
+          "y": 41.9
+        },
+        {
+          "x": 34,
+          "y": 40.9
+        },
+        {
+          "x": 32.8,
+          "y": 41.9
+        },
+        {
+          "x": 31,
+          "y": 40.3
+        }
+      ],
+      "kleur": "#A8763E"
+    },
+    {
+      "id": "3yvgb6ww",
+      "naam": "Border voordeur",
+      "points": [
+        {
+          "x": 21.8,
+          "y": 30
+        },
+        {
+          "x": 21.9,
+          "y": 27.9
+        },
+        {
+          "x": 35.9,
+          "y": 27.6
+        },
+        {
+          "x": 36.3,
+          "y": 29.9
+        }
+      ],
+      "kleur": "#6E8894"
     }
   ],
   "plants": [
     {
       "id": "p1",
-      "naam": "Boom bij trampoline (soort onbekend)",
+      "naam": "Kastanje",
       "latijnseNaam": "",
       "type": "boom",
-      "zoneId": "z2",
-      "plantDatum": null,
+      "zoneId": null,
+      "plantDatum": "",
       "notities": "Voorlopig geraden op basis van de luchtfoto — pas naam/soort aan zodra je 't weet.",
       "snoeiMaanden": [],
       "snoeiMethode": [],
       "oogstMaanden": [],
       "x": 38,
       "y": 57
+    },
+    {
+      "id": "dhcz8v0v",
+      "naam": "Ceanothus",
+      "latijnseNaam": "Ceanothus thyrsiflorus 'Repens'",
+      "type": "struik",
+      "zoneId": "3yvgb6ww",
+      "plantDatum": "",
+      "notities": "Uit plantenselectie, bodembedekkend, 50-100 cm, bloei mei-jun lichtblauw, wintergroen. Snoeiadvies eigen aanvulling: licht terugsnoeien direct na de bloei.",
+      "snoeiMaanden": [
+        6,
+        7
+      ],
+      "snoeiMethode": [
+        "Onderhoudssnoei (tussentijds)"
+      ],
+      "oogstMaanden": []
     }
   ],
   "achtergrond": {
