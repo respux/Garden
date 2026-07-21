@@ -831,4 +831,17 @@ function escapeHtml(str) {
 window.tuinExport = exportData;
 window.tuinReset = resetToPublished;
 
-init();
+window.onerror = function (msg, url, line, col) {
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = `<div style="background:#fee2e2;border:2px solid #b91c1c;color:#7f1d1d;padding:14px;font-family:monospace;font-size:13px;white-space:pre-wrap;border-radius:6px;">FOUT in app.js:\n${msg}\nRegel ${line}, kolom ${col}</div>`;
+  }
+  return false;
+};
+
+init().catch((err) => {
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = `<div style="background:#fee2e2;border:2px solid #b91c1c;color:#7f1d1d;padding:14px;font-family:monospace;font-size:13px;white-space:pre-wrap;border-radius:6px;">FOUT tijdens laden:\n${err.message}\n${err.stack || ""}</div>`;
+  }
+});
